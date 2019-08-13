@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Jogo de Luta</title>
+</head>
+<body>
+    <h1>Jogo de luta</h1>
+    <canvas></canvas>
+    <script>
+            var canvas = document.querySelector("canvas");
+            canvas.width = 400;
+            canvas.height = 300;
+
+            var dt = 0;
+            var anterior = 0;
+            var ctx = canvas.getContext("2d");
+
+            function desenhaCenario(){
+            ctx.fillStyle = "tan";
+            ctx.fillRect(0,0,canvas.width, canvas.height);
+            }
+
+            function desenhaBarraVida(x){
+            ctx.fillStyle = "green";
+            ctx.fillRect(x,5, 150, 30);
+            }
+
+            function desenhaChao(){
+            ctx.fillStyle = "brown";
+            ctx.fillRect(0,canvas.height - 60,canvas.width, canvas.height);
+            }
+
+            function desenhaPersonagem(x, y, w=30, h=30){
+            ctx.fillStyle = "red";
+            ctx.fillRect(x, y, w, h);
+            ctx.strokeStyle = "black";
+            ctx.strokeRect(x, y, w, h);
+            }       
+
+        function teclaPressionada(e)
+        {
+           console.log(e.keyCode);
+            //e -> teclsa sendo pressionada
+            if(e.keyCode == 37)
+            {   
+                if(podeAgachar)
+                velocidadeX = -500;
+            }
+            if(e.keyCode == 39)
+            {
+                if(podeAgachar)
+                velocidadeX = 500;
+            }
+            if(e.keyCode == 38)
+            {
+                if(podePular)
+                pulo();
+            }
+            if(e.keyCode == 40)
+            {
+                if(podeAgachar)
+                {
+                    agacha();
+                    podeAgachar = false;
+                }
+
+            }
+            if(e.keyCode == 65)
+            {
+                soco();
+            }
+            if(e.keyCode == 83)
+            {
+                chute();
+            }
+        }
+        function teclaSolta(e)
+        {
+           
+            //e -> teclsa sendo pressionada
+            if(e.keyCode == 37)
+            {
+                velocidadeX = 00;
+            }
+            if(e.keyCode == 39)
+            {
+                velocidadeX = 00;
+            }
+            if(e.keyCode == 40)
+            {
+                levanta();
+                podeAgachar = true;
+            }
+        }
+        
+        function gravidade(chao)
+        {
+            if(posY+personagemAltura<chao)
+            {
+                aceleracaoY+=1;
+                velocidadeY+=aceleracaoY;
+                podePular = false;
+            }
+            else
+            {
+                if(podePular === false)
+                velocidadeY = 0;
+
+                aceleracaoY = 0;
+                podePular = true;
+            }
+
+        }
+
+        function pulo()
+        {
+            velocidadeY = -400;
+        }
+
+        function agacha()
+        {
+            posY = posY + personagemAltura/2;
+            personagemAltura = personagemAltura/2;
+        }
+
+        function levanta()
+        {
+            posY = posY - personagemAltura;
+            personagemAltura = personagemAltura*2;
+        }
+
+        function soco()
+        {
+            if(podePular)
+            console.log("SOCO NO CHAO");
+            else
+            console.log("SOCO NO AR");
+        }
+
+        function chute()
+        {
+            if(podePular)
+            console.log("CHUTE NO CHAO");
+            else
+            console.log("CHUTE NO AR");
+        }
+
+        function passo(t)//Main loop
+        {
+            dt = (t - anterior)/1000;
+
+            
+            desenhaCenario();
+            desenhaBarraVida(5);
+            desenhaBarraVida(canvas.width - 155);
+            desenhaChao();
+            desenhaPersonagem(posX,posY, personagemLargura, personagemAltura);
+  
+            gravidade(270);
+          
+            if(posX<=0)
+            if(velocidadeX<0)
+                velocidadeX = 0;
+
+            if(posX>=canvas.width-personagemLargura)
+            if(velocidadeX>0)
+                velocidadeX = 0;
+
+
+            posX= posX + velocidadeX*dt;    
+            posY= posY + velocidadeY*dt;
+            
+            anterior = t;
+            requestAnimationFrame(passo);
+        }
+        //Jogo
+
+        //Vai se tornar a classe "lutador"
+        var posX=100, posY=100;
+        var velocidadeX=00,velocidadeY=00;
+        var personagemLargura=60, personagemAltura=120;
+        var aceleracaoY=0;
+        var podePular = false;
+        var podeAgachar=true;
+
+
+        //Controles
+        addEventListener("keydown",teclaPressionada);
+        addEventListener("keyup",teclaSolta);
+        requestAnimationFrame(passo);
+
+    </script>
+    
+</body>
+</html>
