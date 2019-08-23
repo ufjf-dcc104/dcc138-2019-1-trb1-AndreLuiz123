@@ -1,152 +1,53 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Jogo de Luta</title>
-</head>
-<body>
-    <h1>Jogo de luta</h1>
-    <canvas></canvas>
-    <script>
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="X-UA-Compatible" content="ie=edge">
+        <title>Jogo de Luta</title>
+        <script src="Lutador.js"></script>
+    </head>
+    <body>
+        <h1>Jogo de luta</h1>
+        <canvas></canvas>
+        <script>
+            
             var canvas = document.querySelector("canvas");
-            canvas.width = 400;
-            canvas.height = 300;
-
+            canvas.width = 900;
+            canvas.height = 500;
+            
             var dt = 0;
             var anterior = 0;
             var ctx = canvas.getContext("2d");
+            
 
+            var lutador = new Lutador();
+            
+            var teclas = {
+                cima : 0,
+                esquerda : 0,
+                direita : 0,
+                baixo : 0,
+                espaco : 0,
+                Q : 0,
+                W : 0,
+                E : 0,
+                A : 0,
+                S : 0,
+                D : 0
+            }
+
+            
             function desenhaCenario(){
             ctx.fillStyle = "tan";
             ctx.fillRect(0,0,canvas.width, canvas.height);
             }
 
-            function desenhaBarraVida(x){
-            ctx.fillStyle = "green";
-            ctx.fillRect(x,5, 150, 30);
-            }
 
             function desenhaChao(){
             ctx.fillStyle = "brown";
             ctx.fillRect(0,canvas.height - 60,canvas.width, canvas.height);
             }
-
-            function desenhaPersonagem(x, y, w=30, h=30){
-            ctx.fillStyle = "red";
-            ctx.fillRect(x, y, w, h);
-            ctx.strokeStyle = "black";
-            ctx.strokeRect(x, y, w, h);
-            }       
-
-        function teclaPressionada(e)
-        {
-           console.log(e.keyCode);
-            //e -> teclsa sendo pressionada
-            if(e.keyCode == 37)
-            {   
-                if(podeAgachar)
-                velocidadeX = -500;
-            }
-            if(e.keyCode == 39)
-            {
-                if(podeAgachar)
-                velocidadeX = 500;
-            }
-            if(e.keyCode == 38)
-            {
-                if(podePular)
-                pulo();
-            }
-            if(e.keyCode == 40)
-            {
-                if(podeAgachar)
-                {
-                    agacha();
-                    podeAgachar = false;
-                }
-
-            }
-            if(e.keyCode == 65)
-            {
-                soco();
-            }
-            if(e.keyCode == 83)
-            {
-                chute();
-            }
-        }
-        function teclaSolta(e)
-        {
-           
-            //e -> teclsa sendo pressionada
-            if(e.keyCode == 37)
-            {
-                velocidadeX = 00;
-            }
-            if(e.keyCode == 39)
-            {
-                velocidadeX = 00;
-            }
-            if(e.keyCode == 40)
-            {
-                levanta();
-                podeAgachar = true;
-            }
-        }
-        
-        function gravidade(chao)
-        {
-            if(posY+personagemAltura<chao)
-            {
-                aceleracaoY+=1;
-                velocidadeY+=aceleracaoY;
-                podePular = false;
-            }
-            else
-            {
-                if(podePular === false)
-                velocidadeY = 0;
-
-                aceleracaoY = 0;
-                podePular = true;
-            }
-
-        }
-
-        function pulo()
-        {
-            velocidadeY = -400;
-        }
-
-        function agacha()
-        {
-            posY = posY + personagemAltura/2;
-            personagemAltura = personagemAltura/2;
-        }
-
-        function levanta()
-        {
-            posY = posY - personagemAltura;
-            personagemAltura = personagemAltura*2;
-        }
-
-        function soco()
-        {
-            if(podePular)
-            console.log("SOCO NO CHAO");
-            else
-            console.log("SOCO NO AR");
-        }
-
-        function chute()
-        {
-            if(podePular)
-            console.log("CHUTE NO CHAO");
-            else
-            console.log("CHUTE NO AR");
-        }
 
         function passo(t)//Main loop
         {
@@ -154,42 +55,99 @@
 
             
             desenhaCenario();
-            desenhaBarraVida(5);
-            desenhaBarraVida(canvas.width - 155);
             desenhaChao();
-            desenhaPersonagem(posX,posY, personagemLargura, personagemAltura);
-  
-            gravidade(270);
-          
-            if(posX<=0)
-            if(velocidadeX<0)
-                velocidadeX = 0;
+         
+            lutador.desenhar(ctx);
+            lutador.mover(dt);
 
-            if(posX>=canvas.width-personagemLargura)
-            if(velocidadeX>0)
-                velocidadeX = 0;
+            lutador.controlePorTeclasDown({teclas : teclas});
+            lutador.controlePorTeclasUp({teclas : teclas});
 
-
-            posX= posX + velocidadeX*dt;    
-            posY= posY + velocidadeY*dt;
-            
             anterior = t;
             requestAnimationFrame(passo);
         }
         //Jogo
 
-        //Vai se tornar a classe "lutador"
-        var posX=100, posY=100;
-        var velocidadeX=00,velocidadeY=00;
-        var personagemLargura=60, personagemAltura=120;
-        var aceleracaoY=0;
-        var podePular = false;
-        var podeAgachar=true;
-
 
         //Controles
-        addEventListener("keydown",teclaPressionada);
-        addEventListener("keyup",teclaSolta);
+        addEventListener("keydown", function(e){
+           // console.log(e.keyCode);
+            switch(e.keyCode)
+            {
+                
+                case 37:
+                teclas.esquerda = 1;
+                break;
+                case 38:
+                teclas.cima = 1;
+                break;
+                case 39:
+                teclas.direita = 1;
+                break;
+                case 40:
+                teclas.baixo = 1;
+                break;
+                case 32:
+                teclas.espaco = 1;
+                break;      
+                case 81:
+                teclas.Q = 1;
+                break;
+                case 87:
+                teclas.W = 1;
+                break;
+                case 69:
+                teclas.E = 1;
+                break;
+                case 65:
+                teclas.A = 1;
+                break;
+                case 83:
+                teclas.S = 1;
+                break;
+                case 68:
+                teclas.D = 1;
+                break;
+            }
+        })
+        addEventListener("keyup", function(e){
+            switch(e.keyCode)
+            {
+                case 37:
+                teclas.esquerda = 0;
+                break;
+                case 38:
+                teclas.cima = 0;
+                break;
+                case 39:
+                teclas.direita = 0;
+                break;
+                case 40:
+                teclas.baixo = 0;
+                break;
+                case 32:
+                teclas.espaco = 0;
+                break;
+                case 81:
+                teclas.Q = 0;
+                break;
+                case 87:
+                teclas.W = 0;
+                break;
+                case 69:
+                teclas.E = 0;
+                break;
+                case 65:
+                teclas.A = 0;
+                break;
+                case 83:
+                teclas.S = 0;
+                break;
+                case 68:
+                teclas.D = 0;
+                break;
+            }
+        })
         requestAnimationFrame(passo);
 
     </script>
