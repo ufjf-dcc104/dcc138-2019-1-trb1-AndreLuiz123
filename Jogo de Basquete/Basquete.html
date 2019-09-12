@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Basquete</title>
+    <script src="Sprite.js"></script>
+    <script src="Bola.js"></script>
+    <script src="Cesta.js"></script>
+</head>
+<body>
+    <h1>Basquete</h1>
+    <canvas></canvas>
+    <script>
+        var canvas = document.querySelector("canvas");
+        canvas.width = 400;
+        canvas.height = 300;
+        var ctx = canvas.getContext("2d");
+        var pontos = 1000;
+
+        var anterior = 0;
+        var dt = 0;
+        var pc = new Sprite({x:120, y:350});
+        var bola = new Bola({x:150, y:250});
+        var cesta = new Cesta();
+
+
+        var teclas = {
+            cima : 0,
+            esquerda : 0,
+            direita : 0,
+            baixo : 0,
+            espaco : 0
+        }
+       // bola.empurrar(300);
+   
+        function passo(t)
+        {
+            dt = (t-anterior)/1000;
+            
+            ctx.fillStyle = "tan";
+            ctx.fillRect(0,0,canvas.width, canvas.height);
+
+          
+            pc.mover(dt);    
+            bola.mover(dt);
+            pc.desenhar(ctx);
+            bola.desenhar(ctx);
+            cesta.desenhar(ctx);
+
+            pc.cor = "blue";
+            if(bola.colidiuCom(pc))
+            {
+                bola.quicar();
+                /*if(bola.vx!=0)
+               // bola.refletir();
+                else*/
+                
+               /* if(bola.x < pc.x)
+                {
+                    if(bola.vx === 0 && dtBola<=0)
+                    {
+                        dtBola = 0.1;
+                        bola.empurrar(pc.vx);
+                    }
+                }else
+                {
+                    if(bola.vx === 0 && dtBola<=0)
+                    {
+                        dtBola = 0.1;
+                        bola.empurrar(pc.vx);
+                    }
+                }*/
+
+
+                   // dtBola = 0.5;
+                    
+
+                    pc.cor = "red";
+
+                     
+
+                   
+                    /*if((pc.vx>0 && bola.vx>0) || (pc.vx<0 && bola.vx<0))
+                    {
+                        if(Math.abs(pc.vx) < Math.abs(bola.vx))
+                            bola.refletir();
+                    }else*/
+                      /* if((pc.vx<0 && bola.vx>0) || (pc.vx>0 && bola.vx<0) || (pc.vx === 0 && bola.vx != 0))
+                        bola.refletir();
+                       /*  else
+                          if((pc.vx > 0 && bola.vx > 0) || (pc.vx < 0 && bola.vx < 0) && Math.abs(bola.vx) >= Math.abs(pc.vx))
+                          bola.refletir();
+                          else
+                          if((pc.vx > 0 && bola.vx > 0) || (pc.vx < 0 && bola.vx < 0) && Math.abs(bola.vx) <= Math.abs(pc.vx))
+                          bola.empurrar(pc.vx);*/
+                        //else
+                        //if((bola.vx === 0 && pc.vx!=0) || (pc.vx > 0 && bola.vx > 0) || (pc.vx < 0 && bola.vx < 0) && Math.abs(bola.vx) <= Math.abs(pc.vx))
+                        //bola.empurrar(pc.vx);
+                    
+                        
+
+                        if(bola.x > pc.x)
+                        {
+                            if((bola.vx === 0) || (pc.vx > 0 && bola.vx > 0) || (pc.vx < 0 && bola.vx < 0) && Math.abs(bola.vx) <= Math.abs(pc.vx))
+                            bola.empurrar(pc.vx);
+                            else
+                            bola.refletir();
+                        }else
+                        {
+                            if((bola.vx === 0) || (pc.vx < 0 && bola.vx < 0) || (pc.vx > 0 && bola.vx > 0) && Math.abs(bola.vx) <= Math.abs(pc.vx))
+                            bola.empurrar(pc.vx);
+                            else
+                            bola.refletir();
+                        }
+
+                        if(bola.y > pc.y+pc.h)
+                        {
+                           if(pc.vx===0)
+                           {
+                                var forcaNova = bola.x - pc.x+pc.w/2 ;
+                            
+                              if(bola.x<pc.x+pc.w/2)
+                               bola.empurrar(-100);
+                               else
+                               bola.empurrar(100);
+                           }
+
+                           pc.vy = -200;
+                        }else
+                        {
+                            if(bola.y < pc.y)
+                            bola.vy = -200;
+
+                        }
+                        
+
+                      //  console.log(bola.forca);
+
+                       /* if(bola.y < pc.y)
+                        bola.refletirVerticalmente();*/
+                        /*else
+                        bola.quicar();*/
+
+
+                        
+                        //console.log("bola vx = " + bola.vx + " pc vx = " + pc.vx)
+                    /*if(bola.vx === 0 && pc.vx != 0)
+                        bola.empurrar(pc.vx);
+                    else
+                        bola.refletir();*/
+                        /*if((pc.vx<0 && bola.vx<0) || (pc.vx>0 && bola.vx>0) && Math.abs(pc.vx) < Math.abs(bola.vx))
+                        bola.empurrar(-2*bola.vx);*/
+                
+                
+                
+                /* if(bola.vx!=0 && pc.vx!=0)
+                {
+                    bola.empurrar(-1*bola.vx)
+                }else*/
+                //bola.empurrar(pc.vx);
+                // bola.empurrarVerticalmente(pc.vy);
+            }
+            
+            ctx.fillStyle = "black";
+            ctx.fillText("Bola:"+ bola.vx,10,100);
+            ctx.fillText("Jogador:"+ pc.vx,10,120);
+        
+        
+            pc.controlePorTeclas({teclas:teclas});
+            anterior = t;
+            requestAnimationFrame(passo);
+        }
+
+        addEventListener("keydown", function(e){
+          //  console.log(e.keyCode);
+            switch(e.keyCode)
+            {
+                
+                case 37:
+                teclas.esquerda = 1;
+                break;
+                case 38:
+                teclas.cima = 1;
+                break;
+                case 39:
+                teclas.direita = 1;
+                break;
+                case 40:
+                teclas.baixo = 1;
+                break;
+                case 32:
+                teclas.espaco = 1;
+                break;
+            }
+
+        })
+
+        addEventListener("keyup", function(e){
+            switch(e.keyCode)
+            {
+
+                case 37:
+                teclas.esquerda = 0;
+                break;
+                case 38:
+                teclas.cima = 0;
+                break;
+                case 39:
+                teclas.direita = 0;
+                break;
+                case 40:
+                teclas.baixo = 0;
+                break;
+                case 32:
+                teclas.espaco = 0;
+                break;
+            }
+
+        })
+
+        requestAnimationFrame(passo);
+
+    </script>
+</body>
+</html>

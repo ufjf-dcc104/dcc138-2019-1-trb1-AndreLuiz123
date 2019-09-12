@@ -11,17 +11,6 @@ function Lutador(exemplo={}){
         vy = 0,
 
         gravidade = 10,
-
-        soco = 0,//jab
-        chute = 0,//penso nisso depois
-
-        /*
-            direto para todos os golpes, nenhum golpe para o direto
-        */
-
-        direto = 0,
-        cruzado = 0,
-        gancho = 0,
  
         cor = "blue"
      } = exemplo;
@@ -37,12 +26,13 @@ function Lutador(exemplo={}){
 
      this.gravidade = gravidade;
  
-     this.soco = soco;
-     this.chute = chute;
-
-     this.direto = direto;
-     this.cruzado = cruzado;
-     this.gancho = gancho;
+     //Golpes
+     this.ataque = 0;
+     this.soco = 0;
+     this.chute = 0;
+     this.direto = 0;
+     this.cruzado = 0;
+     this.gancho = 0;
 
      this.podeSocar = true;
      this.podeDireto = true;
@@ -50,73 +40,177 @@ function Lutador(exemplo={}){
      this.podeGancho = true;
      this.podeChutar = true;
 
+     //Estados
+     this.estadoNormal = true;
+     this.estadoAgachado = false;
+     this.estadoAtacando = false;
+
+     //Corpo
+      
+
      this.cor = cor;
  }
  
  Lutador.prototype = new Lutador({});
  Lutador.constructor = Lutador;
  
- Lutador.prototype.desenhar = function(ctx){
-    
 
-     //Cabeça
-     ctx.fillStyle = "blue";
-     ctx.strokeStyle = "black";
-     ctx.fillRect(this.x+this.w - 30, this.y,30, 30);
-     ctx.strokeRect(this.x+this.w - 30, this.y,30, 30);
-
-
-     //Tronco
+ Lutador.prototype.desenhaCabeca = function(ctx, maisX=0, maisY=0){
+    ctx.fillStyle = "blue";
+    ctx.strokeStyle = "black";
+    ctx.fillRect(this.x+ this.w - 30 + maisX, this.y+maisY,30, 30);
+    ctx.strokeRect(this.x+ this.w - 30 + maisX, this.y+maisY,30, 30);
+ }
+ Lutador.prototype.desenhaTronco = function(ctx, maisX=0, maisY=0, maisW=0, maisH=0){
     ctx.fillStyle = "green";
     ctx.strokeStyle = "black";
-    ctx.fillRect(this.x, this.y + 30,this.w, this.h/2-30);
-    ctx.strokeRect(this.x, this.y + 30,this.w, this.h/2 - 30);
-
-    //Pernas
+    ctx.fillRect(this.x+maisX, this.y + 30+maisY,this.w+maisW, this.h/2+maisH);
+    ctx.strokeRect(this.x+maisX, this.y + 30+ maisY,this.w+maisW, this.h/2+maisH);
+ }
+ Lutador.prototype.desenhaPernas = function(ctx, maisX=0, maisY=0, maisW=0, maisH=0){
     ctx.fillStyle = "yellow";
     ctx.strokeStyle = "black";
-    ctx.fillRect(this.x-10, this.y + this.h/2,this.w+20, this.h/2);
-    ctx.strokeRect(this.x-10, this.y + this.h/2,this.w+20, this.h/2);
+    ctx.fillRect(this.x+maisX, this.y +maisY,this.w+maisW, this.h/2+maisH);
+    ctx.strokeRect(this.x+maisX, this.y +maisY,this.w+maisW, this.h/2+maisH);
+ }
 
-    if(this.soco>0)
+
+ Lutador.prototype.desenhar = function(ctx){
+
+    
+    if(this.estadoNormal && !this.estadoAgachado)
     {
-        ctx.fillStyle = "red";
-        ctx.strokeStyle = "black";
-        ctx.fillRect(this.x+this.w*2.5/4, this.y+30,130, 30);
-        ctx.strokeRect(this.x+this.w*2.5/4, this.y+30,130, 30);
+        //Cabeça
+        this.desenhaCabeca(ctx,0,0);
+        //Tronco
+        this.desenhaTronco(ctx,0,0,0,-30);
+        //Pernas
+        this.desenhaPernas(ctx,-10,this.h/2, 20,0);
     }
 
-    if(this.direto>0)
+    if(this.estadoAgachado)
     {
-        ctx.fillStyle = "red";
-        ctx.strokeStyle = "black";
-        ctx.fillRect(this.x+this.w, this.y+30,130, 30);
-        ctx.strokeRect(this.x+this.w, this.y+30,130, 30);
+        //Cabeça
+        this.desenhaCabeca(ctx,30,this.h/2-30);
+        //Tronco
+        this.desenhaTronco(ctx,30,this.h/2-50,0,-30);
+        //Pernas
+        this.desenhaPernas(ctx,-10,this.h/2, 20,0);
     }
 
-    if(this.socoCurto>0)
+    
+    if(!this.estadoAgachado)
     {
-        ctx.fillStyle = "red";
-        ctx.strokeStyle = "black";
-        ctx.fillRect(this.x+this.w*(3/4), this.y+30,this.w, this.h/2);
-        ctx.strokeRect(this.x+this.w*(3/4), this.y+30,100, 30);
-    }
-
-
-    if(this.chute>0)
+        if(this.soco>0)
+        {
+           /* //Cabeça
+            this.desenhaCabeca(ctx,-15,0);
+            //Tronco
+            this.desenhaTronco(ctx,0,30,0,-30);
+            //Pernas
+            this.desenhaPernas(ctx,-10,this.h/2, 30,0);*/
+            //Cabeça
+            if(!this.estadoAgachado)
+            {
+                this.desenhaCabeca(ctx,0,0);
+                //Tronco
+                this.desenhaTronco(ctx,0,0,0,-30);
+                //Pernas
+                this.desenhaPernas(ctx,-10,this.h/2, 20,0);
+                ctx.fillStyle = "red";
+                ctx.strokeStyle = "black";
+                ctx.fillRect(this.x+this.w*2.5/4, this.y+30,130, 30);
+                ctx.strokeRect(this.x+this.w*2.5/4, this.y+30,130, 30);
+            }
+    
+        }
+    
+        if(this.direto>0)
+        {
+            //Cabeça
+            this.desenhaCabeca(ctx,15,0);
+            //Tronco
+            this.desenhaTronco(ctx,15,0,0,-30);
+            //Pernas
+            this.desenhaPernas(ctx,5,this.h/2, 20,0);
+            ctx.fillStyle = "purple";
+            ctx.strokeStyle = "black";
+            ctx.fillRect(this.x+this.w, this.y+30,130, 30);
+            ctx.strokeRect(this.x+this.w, this.y+30,130, 30);
+        }
+    
+        if(this.cruzado>0)
+        {
+            //Cabeça
+            this.desenhaCabeca(ctx,10,0);
+            //Tronco
+            this.desenhaTronco(ctx,10,0,0,-30);
+            //Pernas
+            this.desenhaPernas(ctx,0,this.h/2, 20,0);
+            ctx.fillStyle = "red";
+            ctx.strokeStyle = "black";
+            ctx.fillRect(this.x+this.w*(3/4), this.y+10,100, 30);
+            ctx.strokeRect(this.x+this.w*(3/4), this.y+10,100, 30);
+        }
+    
+        if(this.gancho>0)
+        {
+            //Cabeça
+            this.desenhaCabeca(ctx,10,0);
+            //Tronco
+            this.desenhaTronco(ctx,10,0,0,-30);
+            //Pernas
+            this.desenhaPernas(ctx,0,this.h/2, 20,0);        
+    
+            ctx.fillStyle = "red";
+            ctx.strokeStyle = "black";
+            ctx.fillRect(this.x+this.w*(3/4), this.y+this.h/2-20,100, 30);
+            ctx.strokeRect(this.x+this.w*(3/4), this.y+this.h/2-20,100, 30);
+    
+        }
+    
+        if(this.chute>0)
+        {
+            ctx.fillStyle = "red";
+            ctx.strokeStyle = "black";
+            ctx.fillRect(this.x+this.w, this.y+this.h/2,this.w, this.h/2);
+            ctx.fillRect(this.x+this.w, this.y+this.h/2,this.w, this.h/2);
+        }
+    
+    }else
     {
-        ctx.fillStyle = "red";
-        ctx.strokeStyle = "black";
-        ctx.fillRect(this.x+this.w, this.y+this.h/2,this.w, this.h/2);
-        ctx.fillRect(this.x+this.w, this.y+this.h/2,this.w, this.h/2);
+        if(this.soco>0 || this.chute>0 || this.gancho>0 || this.direto>0 || this.cruzado>0)
+        {
+            //Cabeça
+            this.desenhaCabeca(ctx,30,this.h/2-30);
+            //Tronco
+            this.desenhaTronco(ctx,30,this.h/2-50,0,-30);
+            //Pernas
+            this.desenhaPernas(ctx,-10,this.h/2, 20,0);
+            ctx.fillStyle = "red";
+            ctx.strokeStyle = "black";
+            ctx.fillRect(this.x + 60,this.y+this.h/2-30,130, 30);
+            ctx.strokeRect(this.x + 60,this.y+this.h/2-30,130, 30);
+        }
+    
     }
-
-
+    
+    this.estadoNormal = true;
  }
  
  Lutador.prototype.mover = function(dt){
+
      this.x = this.x + this.vx*dt;
      this.y = this.y + this.vy*dt;
+
+
+     if(this.ataque>0)
+     {
+        this.estadoAtacando = true;
+        this.ataque = this.ataque - dt;
+     }
+     else
+     this.estadoAtacando = false;
      
     if(this.y+this.h<430)
     {
@@ -128,20 +222,41 @@ function Lutador(exemplo={}){
 
     if(this.soco>0)
     {
+        this.estadoNormal = false;   
+        this.estadoAtacando = true;
         this.soco = this.soco - dt;
     }
 
     if(this.chute>0)
     {
+        this.estadoNormal = false;
+        this.estadoAtacando = true;
         this.chute = this.chute - dt;
     }
 
     if(this.direto>0)
     {
+        this.estadoNormal = false;
+        this.estadoAtacando = true;
         this.direto = this.direto - dt;
     }
 
+    if(this.cruzado>0)
+    {
+        this.estadoNormal = false;
+        this.estadoAtacando = true;
+        this.cruzado = this.cruzado - dt;
+    }
 
+    if(this.gancho>0)
+    {
+        this.estadoNormal = false;
+        this.estadoAtacando = true;
+        this.gancho = this.gancho - dt;
+    }
+
+   // console.log(this.estadoAtacando);
+  
  }
 
  Lutador.prototype.pular = function(){
@@ -153,15 +268,12 @@ function Lutador(exemplo={}){
 
  Lutador.prototype.darSoco = function(){
 
-    if(this.chute>0)
-    {
-        this.chute = 0;
-    }
 
-    if(this.podeSocar)
+    if(this.podeSocar && !this.estadoAtacando)
     {
-        this.soco = 0.1;
+        this.soco = 0.2;
         this.podeSocar = false;
+        this.ataque = this.soco + 0.3;
     }
     
  }
@@ -169,35 +281,47 @@ function Lutador(exemplo={}){
  Lutador.prototype.darDireto = function(){
 
 
-    if(this.chute>0)
+    if(this.podeDireto && !this.estadoAtacando)
     {
-        this.chute = 0;
-    }
-    if(this.soco>0)
-    {
-        this.soco = 0;
-    }
-
-    if(this.podeDireto)
-    {
-        this.direto = 0.1;
+        this.direto = 0.2;
         this.podeDireto = false;
+        this.ataque = this.direto + 0.3;
+    }
+    
+ }
+
+ Lutador.prototype.darCruzado = function(){
+
+
+    if(this.podeCruzado && !this.estadoAtacando)
+    {
+        this.cruzado = 0.5;
+        this.podeCruzado = false;
+        this.ataque = this.cruzado + 0.5;
+    }
+    
+ }
+
+ Lutador.prototype.darGancho = function(){
+
+
+    if(this.podeGancho && !this.estadoAtacando)
+    {
+        this.gancho = 0.5;
+        this.podeGancho = false;
+        this.ataque = this.gancho + 0.5;
     }
     
  }
 
  Lutador.prototype.darChute = function(){
 
-    if(this.soco>0)
-    {
-        this.soco = 0;
-    }
 
-
-     if(this.podeChutar)
+     if(this.podeChutar && !this.estadoAtacando)
      {
-        this.chute = 0.1;
+        this.chute = 0.5;
         this.podeChutar = false;
+        this.ataque = this.chute + 0.5;
     }
 
  }
@@ -225,14 +349,18 @@ function Lutador(exemplo={}){
  Lutador.prototype.controlePorTeclasDown = function(opcoes){
     this.vx = 0;
     //this.vy = 0;
-    if(opcoes.teclas.esquerda){this.vx -= 50;}
-    if(opcoes.teclas.direita){this.vx += 50;}
-    if(opcoes.teclas.cima){this.pular();}
-    if(opcoes.teclas.baixo){/*agachar*/}
+    if(opcoes.teclas.esquerda && !this.estadoAgachado){this.vx -= 50;}
+    if(opcoes.teclas.direita && !this.estadoAgachado){this.vx += 50;}
+    if(opcoes.teclas.cima && !this.estadoAtacando){this.pular();}
+    if(opcoes.teclas.baixo && !this.estadoAtacando){this.estadoAgachado = true;}
+    
     if(opcoes.teclas.Q){this.darSoco();}
+    else
     if(opcoes.teclas.W){this.darDireto();}
-   // if(opcoes.teclas.E){this.darSoco();}
-    if(opcoes.teclas.A){this.darChute()}
+    else
+    if(opcoes.teclas.E){this.darCruzado();}
+    else
+    if(opcoes.teclas.A){this.darGancho()}
    // if(opcoes.teclas.S){this.podeChutar = false;}
    // if(opcoes.teclas.D){this.podeChutar = false;}
 
@@ -243,8 +371,9 @@ Lutador.prototype.controlePorTeclasUp = function(opcoes){
     //this.vy = 0;
     if(!opcoes.teclas.Q){this.podeSocar = true;}
     if(!opcoes.teclas.W){this.podeDireto = true;}
-  //  if(!opcoes.teclas.E){this.podeSocar = true;}
-    if(!opcoes.teclas.A){this.podeChutar = true;}
+    if(!opcoes.teclas.E){this.podeCruzado = true;}
+    if(!opcoes.teclas.A){this.podeGancho = true;}
+    if(!opcoes.teclas.baixo){this.estadoAgachado = false;}
   //  if(!opcoes.teclas.S){this.podeChutar = true;}
   //  if(!opcoes.teclas.D){this.podeChutar = true;}
 
