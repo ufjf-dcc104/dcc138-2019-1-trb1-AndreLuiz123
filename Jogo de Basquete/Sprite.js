@@ -104,3 +104,20 @@ Sprite.prototype.controlePorTeclas = function(opcoes){
     
 }
 
+Sprite.prototype.inteligenciaArtificial = function(bola, gol){
+
+    if(bola.x - this.x != 0)
+    this.vx = 50*Math.sign(bola.x - this.x);
+    else
+    this.vx = 0;
+
+
+    if(Math.abs(bola.x - gol.x) > Math.abs(gol.x - this.x))
+        this.pular();
+    else
+    {
+        if(Math.abs(bola.x - this.x) < 20)
+            this.pular();
+    }
+}
+

@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <title>Basquete</title>
+    <title>Futebol</title>
     <script src="Sprite.js"></script>
     <script src="Bola.js"></script>
-    <script src="Cesta.js"></script>
+    <script src="Gol.js"></script>
 </head>
 <body>
-    <h1>Basquete</h1>
+    <h1>Futebol</h1>
     <canvas></canvas>
     <script>
         var canvas = document.querySelector("canvas");
@@ -21,10 +21,18 @@
 
         var anterior = 0;
         var dt = 0;
-        var pc = new Sprite({x:120, y:350});
+        var pc = new Sprite({x:100, y:350});
+        var adversario = new Sprite({x:280, y:350});
+        var jogadores = [];
+        jogadores.push(pc);
+        jogadores.push(adversario);
         var bola = new Bola({x:150, y:250});
-        var cesta = new Cesta();
-
+        var gol1 = new Gol();
+        var gol2 = new Gol({x:0});
+        var pontuacao1 = 0;
+        var pontuacao2 = 0;
+        var timer = 60;
+        var contadorSegundos = 1;
 
         var teclas = {
             cima : 0,
@@ -34,7 +42,53 @@
             espaco : 0
         }
        // bola.empurrar(300);
+
+       function mudaTimer()
+       {    
+        if(contadorSegundos>0)
+            contadorSegundos -=dt;
+        else
+        {
+            timer--;
+            contadorSegundos = 1;
+        }
+       }
    
+        function restauraJogadores()
+        {
+            pc.x = 100;
+            pc.y = 350;
+            adversario.x = 280;
+            adversario.y = 350;
+            bola.x = 200;
+            bola.y = 50;
+            bola.vx = 0;
+            bola.forcaHorizontalExterna = 0;
+        }
+
+        function finalizaJogo()
+        {
+            restauraJogadores();
+            adversario.vx = 0;
+            adversario.vy = 0;
+            pc.vx = 0;
+            pc.vy = 0;
+            bola.x = canvas.width/2;
+            bola.y = 230;
+            bola.vy = 0;
+            bola.vx = 0;
+            timer = 0;
+            ctx.fillStyle = "black";
+            ctx.font = "20px Verdana";
+            if(pontuacao1>pontuacao2)
+            ctx.fillText("Jogador 1 ganhou!",canvas.width/2 - 100, 100);
+            else
+            if(pontuacao2>pontuacao1)
+            ctx.fillText("Jogador 2 ganhou!",canvas.width/2 - 100, 100);
+            else
+            ctx.fillText("Empate!",canvas.width/2 - 100, 100);
+        }
+
         function passo(t)
         {
             dt = (t-anterior)/1000;
@@ -42,132 +96,171 @@
             ctx.fillStyle = "tan";
             ctx.fillRect(0,0,canvas.width, canvas.height);
 
-          
-            pc.mover(dt);    
-            bola.mover(dt);
-            pc.desenhar(ctx);
-            bola.desenhar(ctx);
-            cesta.desenhar(ctx);
+            mudaTimer();
 
-            pc.cor = "blue";
-            if(bola.colidiuCom(pc))
+            for(var i = 0; i<jogadores.length; i++)
             {
-                bola.quicar();
-                /*if(bola.vx!=0)
-               // bola.refletir();
-                else*/
-                
-               /* if(bola.x < pc.x)
-                {
-                    if(bola.vx === 0 && dtBola<=0)
-                    {
-                        dtBola = 0.1;
-                        bola.empurrar(pc.vx);
-                    }
-                }else
-                {
-                    if(bola.vx === 0 && dtBola<=0)
-                    {
-                        dtBola = 0.1;
-                        bola.empurrar(pc.vx);
-                    }
-                }*/
-
-
-                   // dtBola = 0.5;
-                    
-
-                    pc.cor = "red";
-
-                     
-
-                   
-                    /*if((pc.vx>0 && bola.vx>0) || (pc.vx<0 && bola.vx<0))
-                    {
-                        if(Math.abs(pc.vx) < Math.abs(bola.vx))
-                            bola.refletir();
-                    }else*/
-                      /* if((pc.vx<0 && bola.vx>0) || (pc.vx>0 && bola.vx<0) || (pc.vx === 0 && bola.vx != 0))
-                        bola.refletir();
-                       /*  else
-                          if((pc.vx > 0 && bola.vx > 0) || (pc.vx < 0 && bola.vx < 0) && Math.abs(bola.vx) >= Math.abs(pc.vx))
-                          bola.refletir();
-                          else
-                          if((pc.vx > 0 && bola.vx > 0) || (pc.vx < 0 && bola.vx < 0) && Math.abs(bola.vx) <= Math.abs(pc.vx))
-                          bola.empurrar(pc.vx);*/
-                        //else
-                        //if((bola.vx === 0 && pc.vx!=0) || (pc.vx > 0 && bola.vx > 0) || (pc.vx < 0 && bola.vx < 0) && Math.abs(bola.vx) <= Math.abs(pc.vx))
-                        //bola.empurrar(pc.vx);
-                    
-                        
-
-                        if(bola.x > pc.x)
-                        {
-                            if((bola.vx === 0) || (pc.vx > 0 && bola.vx > 0) || (pc.vx < 0 && bola.vx < 0) && Math.abs(bola.vx) <= Math.abs(pc.vx))
-                            bola.empurrar(pc.vx);
-                            else
-                            bola.refletir();
-                        }else
-                        {
-                            if((bola.vx === 0) || (pc.vx < 0 && bola.vx < 0) || (pc.vx > 0 && bola.vx > 0) && Math.abs(bola.vx) <= Math.abs(pc.vx))
-                            bola.empurrar(pc.vx);
-                            else
-                            bola.refletir();
-                        }
-
-                        if(bola.y > pc.y+pc.h)
-                        {
-                           if(pc.vx===0)
-                           {
-                                var forcaNova = bola.x - pc.x+pc.w/2 ;
-                            
-                              if(bola.x<pc.x+pc.w/2)
-                               bola.empurrar(-100);
-                               else
-                               bola.empurrar(100);
-                           }
-
-                           pc.vy = -200;
-                        }else
-                        {
-                            if(bola.y < pc.y)
-                            bola.vy = -200;
-
-                        }
-                        
-
-                      //  console.log(bola.forca);
-
-                       /* if(bola.y < pc.y)
-                        bola.refletirVerticalmente();*/
-                        /*else
-                        bola.quicar();*/
-
-
-                        
-                        //console.log("bola vx = " + bola.vx + " pc vx = " + pc.vx)
-                    /*if(bola.vx === 0 && pc.vx != 0)
-                        bola.empurrar(pc.vx);
-                    else
-                        bola.refletir();*/
-                        /*if((pc.vx<0 && bola.vx<0) || (pc.vx>0 && bola.vx>0) && Math.abs(pc.vx) < Math.abs(bola.vx))
-                        bola.empurrar(-2*bola.vx);*/
-                
-                
-                
-                /* if(bola.vx!=0 && pc.vx!=0)
-                {
-                    bola.empurrar(-1*bola.vx)
-                }else*/
-                //bola.empurrar(pc.vx);
-                // bola.empurrarVerticalmente(pc.vy);
+                jogadores[i].mover(dt);
+                jogadores[i].desenhar(ctx);
             }
+
+            /*pc.mover(dt); 
+            adversario.mover(dt);   */
+            bola.mover(dt);
+           /* pc.desenhar(ctx);
+            adversario.desenhar(ctx);*/
+            bola.desenhar(ctx);
+            gol1.desenhar(ctx);
+            gol2.desenhar(ctx);
+
+            if(gol1.verificaGol(bola))
+            {
+                console.log("gol 1");
+                restauraJogadores();
+                pontuacao1++;
+            }
+
+            if(gol2.verificaGol(bola))
+            {                
+                console.log("gol 2");
+                restauraJogadores();
+                pontuacao2++;
+            }
+
+
+            for(var i = 0; i<jogadores.length; i++)
+            {
+                jogadores[i].cor = "blue";
+            }
+
+            for(var i = 0; i<jogadores.length; i++)
+            {
+                if(bola.colidiuCom(jogadores[i]))
+                {
+                    bola.quicar();
+                    /*if(bola.vx!=0)
+                // bola.refletir();
+                    else*/
+                    
+                /* if(bola.x < pc.x)
+                    {
+                        if(bola.vx === 0 && dtBola<=0)
+                        {
+                            dtBola = 0.1;
+                            bola.empurrar(pc.vx);
+                        }
+                    }else
+                    {
+                        if(bola.vx === 0 && dtBola<=0)
+                        {
+                            dtBola = 0.1;
+                            bola.empurrar(pc.vx);
+                        }
+                    }*/
+
+
+                    // dtBola = 0.5;
+                        
+
+                        jogadores[i].cor = "red";
+
+                        
+
+                    
+                        /*if((pc.vx>0 && bola.vx>0) || (pc.vx<0 && bola.vx<0))
+                        {
+                            if(Math.abs(pc.vx) < Math.abs(bola.vx))
+                                bola.refletir();
+                        }else*/
+                        /* if((pc.vx<0 && bola.vx>0) || (pc.vx>0 && bola.vx<0) || (pc.vx === 0 && bola.vx != 0))
+                            bola.refletir();
+                        /*  else
+                            if((pc.vx > 0 && bola.vx > 0) || (pc.vx < 0 && bola.vx < 0) && Math.abs(bola.vx) >= Math.abs(pc.vx))
+                            bola.refletir();
+                            else
+                            if((pc.vx > 0 && bola.vx > 0) || (pc.vx < 0 && bola.vx < 0) && Math.abs(bola.vx) <= Math.abs(pc.vx))
+                            bola.empurrar(pc.vx);*/
+                            //else
+                            //if((bola.vx === 0 && pc.vx!=0) || (pc.vx > 0 && bola.vx > 0) || (pc.vx < 0 && bola.vx < 0) && Math.abs(bola.vx) <= Math.abs(pc.vx))
+                            //bola.empurrar(pc.vx);
+                        
+                            
+
+                            if(bola.x > jogadores[i].x)
+                            {
+                                if((bola.vx === 0) || (jogadores[i].vx > 0 && bola.vx > 0) || (jogadores[i].vx < 0 && bola.vx < 0) && Math.abs(bola.vx) <= Math.abs(jogadores[i].vx))
+                                bola.empurrar(jogadores[i].vx);
+                                else
+                                bola.refletir();
+                            }else
+                            {
+                                if((bola.vx === 0) || (jogadores[i].vx < 0 && bola.vx < 0) || (jogadores[i].vx > 0 && bola.vx > 0) && Math.abs(bola.vx) <= Math.abs(jogadores[i].vx))
+                                bola.empurrar(jogadores[i].vx);
+                                else
+                                bola.refletir();
+                            }
+
+                            if(bola.y > jogadores[i].y+jogadores[i].h)
+                            {
+                            if(jogadores[i].vx===0)
+                            {
+                                    var forcaNova = bola.x - jogadores[i].x+jogadores[i].w/2 ;
+                                
+                                if(bola.x<jogadores[i].x+jogadores[i].w/2)
+                                bola.empurrar(-100);
+                                else
+                                bola.empurrar(100);
+                            }
+
+                            jogadores[i].vy = -200;
+                            }else
+                            {
+                                if(bola.y < jogadores[i].y)
+                                bola.vy = -200;
+
+                            }
+                            
+
+                        //  console.log(bola.forca);
+
+                        /* if(bola.y < jogadores[i].y)
+                            bola.refletirVerticalmente();*/
+                            /*else
+                            bola.quicar();*/
+
+
+                            
+                            //console.log("bola vx = " + bola.vx + " pc vx = " + pc.vx)
+                        /*if(bola.vx === 0 && pc.vx != 0)
+                            bola.empurrar(pc.vx);
+                        else
+                            bola.refletir();*/
+                            /*if((pc.vx<0 && bola.vx<0) || (pc.vx>0 && bola.vx>0) && Math.abs(pc.vx) < Math.abs(bola.vx))
+                            bola.empurrar(-2*bola.vx);*/
+                    
+                    
+                    
+                    /* if(bola.vx!=0 && pc.vx!=0)
+                    {
+                        bola.empurrar(-1*bola.vx)
+                    }else*/
+                    //bola.empurrar(pc.vx);
+                    // bola.empurrarVerticalmente(pc.vy);
+                }
+            }
+
             
             ctx.fillStyle = "black";
-            ctx.fillText("Bola:"+ bola.vx,10,100);
-            ctx.fillText("Jogador:"+ pc.vx,10,120);
+            ctx.font = "50px Verdana";
+            ctx.fillText(pontuacao1,50,50);
+            ctx.fillText(pontuacao2,330,50);
+            ctx.fillText(timer, canvas.width/2, 50);
         
-        
+            adversario.inteligenciaArtificial(bola, gol2);
+
+            if(timer <= 0)
+            finalizaJogo();
+
             pc.controlePorTeclas({teclas:teclas});
             anterior = t;
             requestAnimationFrame(passo);
